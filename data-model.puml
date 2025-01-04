@@ -1,0 +1,122 @@
+@startuml religion-simulation
+
+' Set direction for easier readability
+left to right direction
+
+' Core Classes
+' ------------
+
+' An Individual represents a person with specific attributes.
+class Individual {
+  + id : int
+  + name : string
+  + age : int
+}
+
+' A Doctrine represents an abstract idea or principle.
+class Doctrine {
+  + id : int
+  + name : string
+  + description : text
+}
+
+' An Organization is a group of individuals united by shared goals or doctrines.
+class Organization {
+  + id : int
+  + name : string
+}
+
+' A Faith represents a system of doctrines followed by individuals or groups.
+class Faith {
+  + id : int
+  + name : string
+}
+
+' A Location is a place where individuals, organizations, and faiths exist.
+class Location {
+  + id : int
+  + name : string
+}
+
+' An Event is a specific occurrence in time.  All entities can be associated with events, though not directly via foreign keys.  polymorphic association
+'
+' Not shown in UML - but all tables will have duplicate history tables (django-simple-history)
+'  the history_entity_type  will be the _history_ model, not the original model, and the history_entity_id will be the id of the _history_ row created, not the original row
+'
+class Event {
+    + id : int
+    + name : string
+    + history_entity_type : string
+    + history_entity_id : int
+    + description : text
+    + timestamp : timestamp
+}
+
+
+' Join Tables
+' -----------
+
+' Individuals
+'
+class IndividualDoctrine {
+  + individual_id : int
+  + doctrine_id : int
+  + sentiment : int         ' STRONGLY_DISAGREE to STRONGLY_AGREE
+}
+Individual }o-- IndividualDoctrine
+Doctrine }o-- IndividualDoctrine
+
+class IndividualOrganization {
+  + individual_id : int
+  + organization_id : int
+  + weight : float          ' Importance of the organization to the individual
+}
+Individual }o-- IndividualOrganization
+Organization }o-- IndividualOrganization
+
+class IndividualFaith {
+    + individual_id : int
+    + faith_id : int
+    + weight : float          ' Importance of the faith to the individual
+}
+Individual }o-- IndividualFaith
+Faith }o-- IndividualFaith
+
+class IndividualLocation {
+  + individual_id : int
+  + location_id : int
+  + weight : float          ' Importance of the location to the individual
+}
+Individual }o-- IndividualLocation
+Location }o-- IndividualLocation
+
+
+' Organizations
+'
+class OrganizationDoctrine {
+  + organization_id : int
+  + doctrine_id : int
+  + sentiment : int         ' STRONGLY_DISAGREE to STRONGLY_AGREE
+}
+Organization }o-- OrganizationDoctrine
+Doctrine }o-- OrganizationDoctrine
+
+class OrganizationLocation {
+  + organization_id : int
+  + location_id : int
+  + weight : float          ' Importance of the location to the organization
+}
+Organization }o-- OrganizationLocation
+Location }o-- OrganizationLocation
+
+' Faiths
+'
+class FaithDoctrine {
+  + faith_id : int
+  + doctrine_id : int
+  + sentiment : int         ' STRONGLY_DISAGREE to STRONGLY_AGREE
+}
+Faith }o-- FaithDoctrine
+Doctrine }o-- FaithDoctrine
+
+@enduml
